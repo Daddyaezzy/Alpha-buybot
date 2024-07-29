@@ -5,6 +5,7 @@ const mongoose = require("mongoose");
 const { Telegraf } = require("telegraf");
 const Token = require("./modals/Token");
 const { Connection, PublicKey } = require("@solana/web3.js");
+require("dotenv").config();
 
 const app = express();
 app.use(express.json());
@@ -18,12 +19,11 @@ app.get("*", async (req: any, res: any) => {
   res.send("hello Get");
 });
 
-const botToken = "7450311691:AAFss9dUCWvV8Ela8lhloKwi_kjsi6grREc";
-const mongoUrl =
-  "mongodb+srv://pulumbu11:password123$@cluster0.zkwi0fa.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0";
+const botToken = process.env.TELEGRAM_BOT_KEY;
+const mongoUrl = `mongodb+srv://pulumbu11:${process.env.MONGODB_PASSWORD}@cluster0.zkwi0fa.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0`;
 const chatId = process.env.CHAT_ID;
-const shyftApiKey = "OxTdeVh-vv5uJlYR";
-const bitqueryApiKey = "BQYhJMlEDO6ZUxSIB23Yl01U3NXiIMvB";
+const shyftApiKey = process.env.SHYFT_APIKEY;
+const bitqueryApiKey = process.env.BITQUERY_APIKEY;
 
 const bot = new Telegraf(botToken);
 
