@@ -333,7 +333,7 @@ Please send an image or video (GIF) to be associated with the alerts.`
 
   bot.on("photo", async (ctx: any) => {
     if (expectingMedia) {
-      mediaId = ctx.message.photo[ctx.message.photo.length - 1].file_id;
+      mediaId = ctx.message.photo.pop().file_id;
       ctx.reply("Image received. Token tracking will now begin.");
       expectingMedia = false;
       await startTracking(ctx);
@@ -362,12 +362,12 @@ Please send an image or video (GIF) to be associated with the alerts.`
     const transactions = await fetchTokenTransactions(currentTokenAddress);
     const supply = await getTokenSupply(currentTokenAddress);
 
-    bot.telegram.sendPhoto(botToken, mediaId, {
-      caption: "text",
-      parse_mode: "HTML",
-    });
+    // bot.telegram.sendPhoto(botToken, mediaId, {
+    //   caption: "text",
+    //   parse_mode: "HTML",
+    // });
 
-    let telegramImage = `https://api.telegram.org/bot${botToken}/getFile?file_id=${mediaId}`;
+    let telegramImage = `${mediaId}`;
 
     if (transactions.length > 0) {
       let whaleFound = false;
@@ -390,14 +390,12 @@ Please send an image or video (GIF) to be associated with the alerts.`
           .select("photo")
           .lean();
         if (walletBalance > 10000) {
-          await ctx.replyWithPhoto(
-            { source: media.photo },
-            {
-              caption: `<b>🚨Whale Alert!🚨 </b>
+          await bot.telegram.sendPhoto(ctx.chat.id, media.photo, {
+            caption: `<b>🚨Whale Alert!🚨 </b>
 🐋🐋🐋🐋🐋🐋🐋🐋🐋🐋🐋🐋🐋🐋🐋🐋🐋🐋🐋🐋🐋🐋🐋🐋🐋🐋🐋🐋🐋🐋🐋🐋🐋🐋🐋🐋🐋🐋🐋\n
 💵 ${transaction.amount + " " + isValid[0].baseToken.symbol} (${
-                "$" + transaction.amount_usd
-              }) \n
+              "$" + transaction.amount_usd
+            }) \n
 ${
   isValid[0].priceUsd * transaction.amount + " " + isValid[0].quoteToken.symbol
 }\n
@@ -405,20 +403,17 @@ ${
 🌐${formatAddress(transaction.sender.address)}\n
 📉Market Cap: $${supply * isValid[0].priceUsd}\n
 📊Chart ♻️Trade 🚀Trending`,
-              parse_mode: "HTML",
-            }
-          );
+            parse_mode: "HTML",
+          });
           whaleFound = true;
           break;
         } else {
-          await ctx.replyWithPhoto(
-            { source: mediaId },
-            {
-              caption: `<b>🚨Buy Alert!🚨 </b>
+          await bot.telegram.sendPhoto(ctx.chat.id, media.photo, {
+            caption: `<b>🚨Buy Alert!🚨 </b>
 🔋🔋🔋🔋🔋🔋🔋🔋🔋🔋🔋🔋🔋🔋🔋🔋🔋🔋🔋🔋🔋🔋🔋🔋🔋🔋🔋🔋🔋🔋🔋🔋🔋🔋🔋🔋🔋🔋🔋\n
 💵 ${transaction.amount + " " + isValid[0].baseToken.symbol} (${
-                "$" + transaction.amount_usd
-              }) \n
+              "$" + transaction.amount_usd
+            }) \n
 ${
   isValid[0].priceUsd * transaction.amount + " " + isValid[0].quoteToken.symbol
 }\n
@@ -426,9 +421,8 @@ ${
 🌐${formatAddress(transaction.sender.address)}\n
 📉Market Cap: $${supply * isValid[0].priceUsd}\n
 📊Chart ♻️Trade 🚀Trending`,
-              parse_mode: "HTML",
-            }
-          );
+            parse_mode: "HTML",
+          });
         }
       }
     } else {
