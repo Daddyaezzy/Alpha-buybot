@@ -1,5 +1,5 @@
 const mongoose = require("mongoose");
-
+// this is a schema
 const tokenSchema = new mongoose.Schema(
   {
     chat_id: { type: String, required: true },
